@@ -19,17 +19,20 @@ const createUser = async function (params) {
   users[user._id] = user
   return user
 }
+
 const deleteUser = async function (id) {
   if (!id) {throw new Error('update user must provide id')}
   if (!users[id]) {throw new Error('Invalid id')}
   return delete users[id]
 }
+
 const updateUser = async function (id, params) {
   if (!id) {throw new Error('update user must provide id')}
   if (!users[id]) {throw new Error('Invalid id')}
   users[id] = Object.assign({}, users[id], params)
   return users[id]
 }
+
 const getUser = async function (id) {
   if (!id) {throw new Error('Get user must provide id')}
   const user = users[id]

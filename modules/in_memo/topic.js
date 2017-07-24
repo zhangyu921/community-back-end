@@ -34,17 +34,20 @@ const createTopic = async function (params) {
   topics[topic._id] = topic
   return topic
 }
+
 const deleteTopic = async function (id) {
   if (!id) {throw new Error('update topic must provide id')}
   if (!topics[id]) {throw new Error('Invalid id')}
   return delete topics[id]
 }
+
 const updateTopic = async function (id, params) {
   if (!id) {throw new Error('update topic must provide id')}
   if (!topics[id]) {throw new Error('Invalid id')}
   topics[id] = Object.assign({}, topics[id], params)
   return topics[id]
 }
+
 const getTopic = async function (id) {
   if (!id) {throw new Error('Get topic must provide id')}
   const topic = topics[id]
@@ -54,6 +57,7 @@ const getTopic = async function (id) {
     throw new Error('Invalid id')
   }
 }
+
 const addReply = async function (id, params) {
   if (!id) {throw new Error('Get topic must provide topic id')}
   if(topics[id]){
