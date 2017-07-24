@@ -35,5 +35,12 @@ router.route('/:id')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
+  .delete((req, res, next) => {
+    (async () => {
+      return userModule.deleteUser(req.params.id)
+    })()
+      .then(data => res.json(data))
+      .catch(err => next(err))
+  })
 
 module.exports = router
