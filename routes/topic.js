@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const topicModule = require('../modules/in_memo/topic')
-
+const userModule = require('../modules/in_memo/user')
 /* GET topics listing. */
 
 router.route('/')
@@ -13,18 +13,20 @@ router.route('/')
       .catch(err => next(err))
   })
   .post((req, res, next) => {
-    (async (params) => {
-      return topicModule.createTopic(params)
-    })(req.body)
+    (async () => {
+      const user = await userModule.getUser(req.body.userId)
+      const params = Object.assign({}, req.body, {user})
+      return await topicModule.createTopic(params)
+    })()
       .then(data => res.json(data))
       .catch(err => next(err))
   })
 
 router.route('/:id')
   .get((req, res, next) => {
-    (async (id) => {
-      return topicModule.getTopic(id)
-    })(req.params.id)
+    (async () => {
+      return topicModule.getTopic(req.params.id)
+    })()
       .then(data => res.json(data))
       .catch(err => next(err))
   })
@@ -46,7 +48,9 @@ router.route('/:id')
 router.route('/:id/reply')
   .post((req, res, next) => {
     (async () => {
-      return topicModule.addReply(req.params.id, req.body)
+      const user = await userModule.getUser(req.body.userId)
+      const params = Object.assign({}, req.body, {user})
+      return await topicModule.addReply(req.params.id, params)
     })()
       .then(data => res.json(data))
       .catch(err => next(err))

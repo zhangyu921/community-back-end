@@ -8,11 +8,11 @@ let topics = {}
 
 class Topic {
   constructor (params) {
-    if (!params.title || !params.content || !params.userId) throw new Error('invalid params')
+    if (!params.title || !params.content || !params.userId) {throw new Error('invalid params')}
     this._id = TOPIC_ID_INIT++
     this.title = params.title
     this.content = params.content
-    this.userId = params.userId
+    this.user = params.user
     this.replys = []
   }
 }
@@ -21,7 +21,7 @@ class Reply {
   constructor (params) {
     if (params.userId && params.content) {
       this._id = REPLY_ID_INIT++
-      this.userId = params.userId
+      this.user = params.user
       this.content = params.content
     } else {
       throw new Error('invalid params')
