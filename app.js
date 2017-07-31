@@ -8,8 +8,9 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var user = require('./routes/user');
 const topic = require('./routes/topic')
+require('./services/mongoose')
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
