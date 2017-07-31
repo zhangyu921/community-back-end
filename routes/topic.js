@@ -16,7 +16,7 @@ router.route('/')
     (async () => {
       const user = await userModel.getUserById(req.body.userId)//验证
       if (!user) { throw new Error('Invalid Author') }
-      const params = Object.assign({}, req.body, {authorId: user._id})
+      const params = Object.assign({}, req.body, {userId: user._id})
       return await topicModel.createTopic(params)
     })()
       .then(data => res.json(data))
@@ -46,15 +46,16 @@ router.route('/:id')
       .catch(err => next(err))
   })
 
-// router.route('/:id/reply')
-//   .post((req, res, next) => {
-//     (async () => {
-//       const user = await userModel.getUserById(req.body.userId)
-//       const params = Object.assign({}, req.body, {user})
-//       return await topicModel.addReply(req.params.id, params)
-//     })()
-//       .then(data => res.json(data))
-//       .catch(err => next(err))
-//   })
+router.route('/:id/reply')
+  .post((req, res, next) => {
+    (async () => {
+      const user = await userModel.getUserById(req.body.userId)
+      if(!user){throw new Error('Invalid user id')}
+      const params = req.body
+      return await topicModel.createReply(req.params.id, params)
+    })()
+      .then(data => res.json(data))
+      .catch(err => next(err))
+  })
 
 module.exports = router

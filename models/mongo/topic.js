@@ -2,14 +2,14 @@ const mongoose = require('mongoose')
 
 const replySchema = new mongoose.Schema({
   content: String,
-  userId: String,
+  userId: {type: String},
 })
 
 const topicSchema = new mongoose.Schema({
   title: {type: String, required: 1},
   content: {type: String, required: 1, limit: 5},
-  authorId: {type: String, required: 1},
-  reply: [replySchema]
+  userId: {type: String, required: 1},
+  replies: [replySchema]
 })
 
 const topicModel = mongoose.model('topic', topicSchema)
@@ -53,11 +53,24 @@ const upDateTopicById = async function (id, params) {
     })
 }
 
+const createReply = async function (topicId, params) {
+  return await topicModel.findOne({_id: topicId})
+    .then(topic => {
+      topic.replies.unshift(params)
+      return topic.save()
+    })
+    .catch(e => {
+      throw new Error(e)
+    })
+  // if (!topic) {throw new Error('invalid topic id')}
+}
+
 module.exports = {
   model: topicModel,
   getTopics,
   getTopicById,
   createTopic,
   upDateTopicById,
-  deleteTopicById
+  deleteTopicById,
+  createReply,
 }
