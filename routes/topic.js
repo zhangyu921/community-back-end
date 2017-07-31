@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const topicModule = require('../modules/in_memo/topic')
-const userModule = require('../modules/in_memo/user')
+const topicModule = require('../models/in_memo/topic')
+const userModule = require('../models/in_memo/user')
 /* GET topics listing. */
 
 router.route('/')
