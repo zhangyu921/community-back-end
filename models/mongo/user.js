@@ -11,6 +11,7 @@ const userSchema = new Schema({
   phoneNumber: String,
   password: String,
 })
+userSchema.index({phoneNumber: 1, password: 1})
 const DEFAULT_PROJECTION = {password: false, phoneNumber: false, __v: false}
 
 const userModel = mongoose.model('user', userSchema)
@@ -63,6 +64,16 @@ const deleteUserById = async function (id) {
     .catch(e => {throw new Error(e)})
 }
 
+const login = async function (phoneNumber, password) {
+  password = await pbkdf2Async(password, Cipher.PASSWORD_SALT, 512, 512, 'sha512')
+    .catch(e => {throw new Error(e)})
+  const user = await userModel.findOne({phoneNumber, password})
+    .select(DEFAULT_PROJECTION)
+    .catch(e => {throw new Error(e)})
+  if (!user) {throw new Error('No Such User!')}
+  return user
+}
+
 module.exports = {
   model: userModel,
   getUsers,
@@ -70,4 +81,5 @@ module.exports = {
   createUser,
   updateUserById,
   deleteUserById,
+  login,
 }
