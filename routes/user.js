@@ -13,9 +13,17 @@ router.route('/')
       .catch(err => next(err))
   })
   .post((req, res, next) => {
-    (async (params) => {
-      return userModel.createUser(params)
-    })(req.body)
+    (async () => {
+      let user = await userModel.createUser(req.body)
+      return {
+        code: 0,
+        user: {
+          _id: user._id,
+          name: user.name,
+          age: user.age,
+        }
+      }
+    })()
       .then(data => res.json(data))
       .catch(err => next(err))
   })
