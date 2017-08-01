@@ -7,7 +7,7 @@ const userModel = require('../models/mongo/user')
 router.route('/')
   .get((req, res, next) => {
     (async () => {
-      return userModel.model.find({})
+      return userModel.getUsers()
     })()
       .then(data => res.json(data))
       .catch(err => next(err))
