@@ -8,6 +8,7 @@ const tokenVerify = function (options) {
       if (!auth) {throw new Error('No Auth!')}
       const obj = JWT.verify(auth, JWT_SECRET)
       if (Date.now() - obj.expire > 0) {throw new Error('Token expired!')}
+      req.tokenData = obj
       next()
     }
     catch (e) {

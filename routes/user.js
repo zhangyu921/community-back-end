@@ -29,11 +29,21 @@ router.route('/')
       .catch(err => next(err))
   })
 
+const Fn = (() => {
+  let msg
+  return {
+    saveMsg: (tokenMsg) => {
+      msg = tokenMsg
+    },
+    getMsg: () => msg
+  }
+})()
+
 router.route('/:id')
-  .get((req, res, next) => {
-    (async (id) => {
-      return userModel.getUserById(id)
-    })(req.params.id)
+  .get(auth(), (req, res, next) => {
+    (async () => {
+      return userModel.getUserById(req.token._id)
+    })()
       .then(data => res.json(data))
       .catch(err => next(err))
   })

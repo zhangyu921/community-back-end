@@ -6,10 +6,10 @@ const pbkdf2Async = util.promisify(crypto.pbkdf2)
 const Cipher = require('../../cipher')
 
 const userSchema = new Schema({
-  name: {type: String, required: true, index: true, unique: true},
+  name: {type: String, required: true},
   age: {type: Number},
-  phoneNumber: String,
-  password: String,
+  phoneNumber: {type: String, required: true},
+  password: {type: String, required: true, limit: 6},
 })
 userSchema.index({phoneNumber: 1, password: 1})
 const DEFAULT_PROJECTION = {password: false, phoneNumber: false, __v: false}
@@ -65,7 +65,7 @@ const deleteUserById = async function (id) {
 }
 
 const login = async function (phoneNumber, password) {
-  password = await pbkdf2Async(password, Cipher.PASSWORD_SALT, 512, 512, 'sha512')
+  password = await pbkdf2Async(password, Cipher.PASSWORD_SALT, 512, 128, 'sha512')
     .catch(e => {throw new Error(e)})
   const user = await userModel.findOne({phoneNumber, password})
     .select(DEFAULT_PROJECTION)
