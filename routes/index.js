@@ -15,7 +15,7 @@ router.post('/login', (req, res, next) => {
     const token = await JWT.sign({
       _id: user._id,
       iat: Date.now(),
-      expire: Date.now() + 1000 * 60 * 60 * 24
+      expire: Date.now() + 1000 * 60 * 60 * 24 * 30
     }, JWT_SECRET)
     return {
       user,

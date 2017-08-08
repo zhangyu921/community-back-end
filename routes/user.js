@@ -6,7 +6,7 @@ const userModel = require('../models/mongo/user')
 /* GET users listing. */
 
 router.route('/')
-  .get((req, res, next) => {
+  .get(auth(), (req, res, next) => {
     (async () => {
       return userModel.getUsers()
     })()
@@ -28,16 +28,6 @@ router.route('/')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
-
-const Fn = (() => {
-  let msg
-  return {
-    saveMsg: (tokenMsg) => {
-      msg = tokenMsg
-    },
-    getMsg: () => msg
-  }
-})()
 
 router.route('/:id')
   .get(auth(), (req, res, next) => {

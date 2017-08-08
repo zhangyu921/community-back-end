@@ -36,7 +36,7 @@ const getUserById = async function (id) {
 
 const createUser = async function (params) {
   if (!params.password || !params.phoneNumber) {throw new Error('Need password and phoneNumber for now!')}
-  params.password = await pbkdf2Async(params.password, Cipher.PASSWORD_SALT, 512, 512, 'sha512')
+  params.password = await pbkdf2Async(params.password, Cipher.PASSWORD_SALT, 512, 128, 'sha512')
   let user = await userModel.create(params)
     .catch(e => {
       if (e.code === 11000) {
