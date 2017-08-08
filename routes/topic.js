@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const topicModel = require('../models/mongo/topic')
 const userModel = require('../models/mongo/user')
+const auth = require('../middlewares/tokenverify')
 /* GET topics listing. */
 
 router.route('/')
@@ -12,7 +13,7 @@ router.route('/')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
-  .post((req, res, next) => {
+  .post(auth(), (req, res, next) => {
     (async () => {
       const user = await userModel.getUserById(req.body.userId)//验证
       if (!user) { throw new Error('Invalid Author') }
@@ -31,14 +32,14 @@ router.route('/:id')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
-  .patch((req, res, next) => {
+  .patch(auth(), (req, res, next) => {
     (async () => {
       return topicModel.upDateTopicById(req.params.id, req.body)
     })()
       .then(data => res.json(data))
       .catch(err => next(err))
   })
-  .delete((req, res, next) => {
+  .delete(auth(), (req, res, next) => {
     (async () => {
       return topicModel.deleteTopicById(req.params.id)
     })()
@@ -47,7 +48,7 @@ router.route('/:id')
   })
 
 router.route('/:id/reply')
-  .post((req, res, next) => {
+  .post(auth(), (req, res, next) => {
     (async () => {
       const user = await userModel.getUserById(req.body.userId)
       if(!user){throw new Error('Invalid user id')}
