@@ -2,9 +2,11 @@ const express = require('express')
 const router = express.Router()
 const auth = require('../middlewares/tokenverify')
 const userModel = require('../models/mongo/user')
+const path = require('path')
+const multer = require('multer')
+const upload = multer({dest: path.join(__dirname, '../public/upload')})
 
 /* GET users listing. */
-
 router.route('/')
   .get(auth(), (req, res, next) => {
     (async () => {
@@ -37,10 +39,11 @@ router.route('/:id')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
-  .patch(auth(), (req, res, next) => {
-    (async (params) => {
-      return userModel.updateUserById(req.params.id, params)
-    })(req.body)
+  .patch(auth(), upload.single('avatar'), (req, res, next) => {
+    console.log('file', req.file)
+    ;(async () => {
+      return userModel.updateUserById(req.params.id, req.body)
+    })()
       .then(data => res.json(data))
       .catch(err => next(err))
   })
