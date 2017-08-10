@@ -74,7 +74,7 @@ router.route('/:id')
       )
       if (log.code === 200) {
         return await userModel.updateUserById(req.tokenData._id, {
-          avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName
+          avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName + '?'//七牛异常，不加？就显示图片不是最新的
         })
       }
     })()

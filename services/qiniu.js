@@ -15,9 +15,11 @@ const getUploadToken = (options) => { //
   return putPolicy.uploadToken(mac)
 }
 
-const uploader = (key, file) => {
+const uploader = (key, file, options = {}) => {
   return new Promise((res, rej) => {
-    formUploader.putStream(getUploadToken({scope: bucket}), key, file, putExtra,
+    formUploader.putStream(
+      getUploadToken({scope: bucket + ':' + key}),
+      key, file, putExtra,
       function (respErr, respBody, respInfo) {
         if (respErr) {
           throw respErr
