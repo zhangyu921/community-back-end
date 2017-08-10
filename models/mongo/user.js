@@ -10,6 +10,7 @@ const userSchema = new Schema({
   age: {type: Number},
   phoneNumber: {type: String, required: true},
   password: {type: String, required: true, limit: 6},
+  avatar: {type: String}
 })
 userSchema.index({phoneNumber: 1, password: 1})
 const DEFAULT_PROJECTION = {password: false, phoneNumber: false, __v: false}

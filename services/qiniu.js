@@ -17,13 +17,13 @@ const getUploadToken = (options) => { //
 
 const uploader = (key, file) => {
   return new Promise((res, rej) => {
-    formUploader.putFile(getUploadToken(), key, file, putExtra,
+    formUploader.putStream(getUploadToken({scope: bucket}), key, file, putExtra,
       function (respErr, respBody, respInfo) {
         if (respErr) {
-          rej({code: 1, data: respErr})
+          throw respErr
         }
-        if (respInfo.statusCode == 200) {
-          res({code: 0, data: respBody})
+        if (Number(respInfo.statusCode) === 200) {
+          res({code: 200, data: respBody})
         } else {
           rej({code: respInfo.statusCode, data: respBody})
         }

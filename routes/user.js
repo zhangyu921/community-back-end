@@ -3,13 +3,12 @@ const router = express.Router()
 const fs = require('fs')
 const auth = require('../middlewares/tokenverify')
 const userModel = require('../models/mongo/user')
-const path = require('path')
 const multer = require('multer')
 const bytes = require('bytes')
 const uploader = require('../services/qiniu').uploader
-const storage = multer.memoryStorage()
 const upload = multer({
-  dest: path.join(__dirname, '../tmp'),
+  // dest: path.join(__dirname, '../tmp'),
+  storage: multer.memoryStorage(),
   limits: {
     fileSize: bytes('2MB') // 限制文件在2MB以内
   },
@@ -17,9 +16,17 @@ const upload = multer({
     // 只允许上传jpg|png|jpeg|gif格式的文件
     const type = '|' + files.mimetype.slice(files.mimetype.lastIndexOf('/') + 1) + '|'
     const fileTypeValid = '|jpg|png|jpeg|gif|'.indexOf(type) !== -1
-    callback(null, !!fileTypeValid)
+    callback(null, fileTypeValid)
   }
 })
+const Duplex = require('stream').Duplex
+
+function bufferToStream (buffer) { //buffer转可读流
+  let stream = new Duplex()
+  stream.push(buffer)
+  stream.push(null)
+  return stream
+}
 
 /* GET users listing. */
 router.route('/')
@@ -30,6 +37,7 @@ router.route('/')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
+
   .post((req, res, next) => {
     (async () => {
       let user = await userModel.createUser(req.body)
@@ -54,15 +62,26 @@ router.route('/:id')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
+
   .post(auth(), upload.single('avatar'), (req, res, next) => {
     (async () => {
-      console.log('file', req.file)
-      return await uploader(req.file.originalname, req.file.path)
+      if (!req.file) {throw new Error('File upload error')}
+      let mimeType = req.file.mimetype ? req.file.mimetype.split('/')[1] : ''
+      let fileName = 'image/avatar/' + req.tokenData._id + '.' + mimeType
+      let log = await uploader(
+        fileName,
+        bufferToStream(req.file.buffer),
+      )
+      if (log.code === 200) {
+        return await userModel.updateUserById(req.tokenData._id, {
+          avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName
+        })
+      }
     })()
       .then(data => res.json(data))
-      .then(fs.unlink(req.file.path, err => {
-        if (err) { throw Promise.reject(err)}
-      }))
+      // .then(fs.unlink(req.file.path, err => { //删除本地文件
+      //   if (err) {return Promise.reject(err)}
+      // }))
       .catch(err => next(err))
   })
 
@@ -73,6 +92,7 @@ router.route('/:id')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
+
   .delete(auth(), (req, res, next) => {
     (async () => {
       return userModel.deleteUserById(req.params.id)
