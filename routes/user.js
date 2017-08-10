@@ -1,10 +1,25 @@
 const express = require('express')
 const router = express.Router()
+const fs = require('fs')
 const auth = require('../middlewares/tokenverify')
 const userModel = require('../models/mongo/user')
 const path = require('path')
 const multer = require('multer')
-const upload = multer({dest: path.join(__dirname, '../public/upload')})
+const bytes = require('bytes')
+const uploader = require('../services/qiniu').uploader
+const storage = multer.memoryStorage()
+const upload = multer({
+  dest: path.join(__dirname, '../tmp'),
+  limits: {
+    fileSize: bytes('2MB') // 限制文件在2MB以内
+  },
+  fileFilter: function (req, files, callback) {
+    // 只允许上传jpg|png|jpeg|gif格式的文件
+    const type = '|' + files.mimetype.slice(files.mimetype.lastIndexOf('/') + 1) + '|'
+    const fileTypeValid = '|jpg|png|jpeg|gif|'.indexOf(type) !== -1
+    callback(null, !!fileTypeValid)
+  }
+})
 
 /* GET users listing. */
 router.route('/')
@@ -39,9 +54,20 @@ router.route('/:id')
       .then(data => res.json(data))
       .catch(err => next(err))
   })
-  .patch(auth(), upload.single('avatar'), (req, res, next) => {
-    console.log('file', req.file)
-    ;(async () => {
+  .post(auth(), upload.single('avatar'), (req, res, next) => {
+    (async () => {
+      console.log('file', req.file)
+      return await uploader(req.file.originalname, req.file.path)
+    })()
+      .then(data => res.json(data))
+      .then(fs.unlink(req.file.path, err => {
+        if (err) { throw Promise.reject(err)}
+      }))
+      .catch(err => next(err))
+  })
+
+  .patch(auth(), (req, res, next) => {
+    (async () => {
       return userModel.updateUserById(req.params.id, req.body)
     })()
       .then(data => res.json(data))
