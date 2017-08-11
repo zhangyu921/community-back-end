@@ -15,10 +15,10 @@ const getUploadToken = (options) => { //
   return putPolicy.uploadToken(mac)
 }
 
-const uploader = (key, file, options = {}) => {
+const uploader = (key, file, options) => {
   return new Promise((res, rej) => {
     formUploader.putStream(
-      getUploadToken({scope: bucket + ':' + key}),
+      getUploadToken(Object.assign({scope: bucket + ':' + key}, options)),
       key, file, putExtra,
       function (respErr, respBody, respInfo) {
         if (respErr) {
@@ -32,7 +32,6 @@ const uploader = (key, file, options = {}) => {
       }
     )
   })
-
 }
 
 module.exports = {
@@ -40,15 +39,3 @@ module.exports = {
   getUploadToken,
   uploader,
 }
-
-//test
-
-// const localFile = __dirname + '/../public/upload/WX20170810-105936@2x.png'
-//
-// uploader('123456123.txt', localFile)
-//   .then(data => {
-//     console.log(data)
-//   })
-//   .catch(e => {
-//     console.log(e)
-//   })

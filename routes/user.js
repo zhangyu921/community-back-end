@@ -67,14 +67,14 @@ router.route('/:id')
     (async () => {
       if (!req.file) {throw new Error('File upload error')}
       let mimeType = req.file.mimetype ? req.file.mimetype.split('/')[1] : ''
-      let fileName = 'image/avatar/' + req.tokenData._id + '.' + mimeType
+      let fileName = 'image/avatar/' + req.tokenData._id + Date.now() + '.' + mimeType
       let log = await uploader(
         fileName,
         bufferToStream(req.file.buffer),
       )
       if (log.code === 200) {
         return await userModel.updateUserById(req.tokenData._id, {
-          avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName + '?'//七牛异常，不加？就显示图片不是最新的
+          avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName + '-avatar'
         })
       }
     })()
