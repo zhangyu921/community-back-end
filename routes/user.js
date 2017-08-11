@@ -76,6 +76,8 @@ router.route('/:id')
         return await userModel.updateUserById(req.tokenData._id, {
           avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName + '-avatar'
         })
+      } else {
+        return log
       }
     })()
       .then(data => res.json(data))
