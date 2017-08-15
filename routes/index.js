@@ -17,12 +17,17 @@ router.post('/login', (req, res, next) => {
       iat: Date.now(),
       expire: Date.now() + 1000 * 60 * 60 * 24 * 30
     }, JWT_SECRET)
-    return {
-      user,
-      token,
-    }
+    return {user, token}
   })()
-    .then(data => {res.json(data)})
+    .then(data => {
+      res.json({
+        code: 0,
+        data: {
+          user: data.user,
+          token: data.token
+        }
+      })
+    })
     .catch(e => {next(e)})
 })
 
