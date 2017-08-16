@@ -65,7 +65,7 @@ router.route('/:id')
 
   .post(auth(), upload.single('avatar'), (req, res, next) => {
     (async () => {
-      if (!req.file) {throw new Error('File upload error')}
+      if (!req.file) {throw new ErrorValidation('avator', 'No file received')}
       let mimeType = req.file.mimetype ? req.file.mimetype.split('/')[1] : ''
       let fileName = 'image/avatar/' + req.tokenData._id + Date.now() + '.' + mimeType
       let log = await uploader(
@@ -77,13 +77,14 @@ router.route('/:id')
           avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName + '-avatar'
         })
       } else {
-        return log
+        throw new ErrorBaseHTTP('fail upload avatar', 100002,
+          500, '上传头像失败，请稍后再试~')
       }
     })()
-      .then(data => res.json(data))
-      // .then(fs.unlink(req.file.path, err => { //删除本地文件
-      //   if (err) {return Promise.reject(err)}
-      // }))
+      .then(data => res.json({
+        code: 0,
+        data: {avatar: data.avatar}
+      }))
       .catch(err => next(err))
   })
 

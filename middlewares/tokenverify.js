@@ -3,19 +3,29 @@ const JWT_SECRET = require('../cipher').JWT_SECRET
 
 const tokenVerify = function (options) {
   return function (req, res, next) {
-    if (!req.get('Authorization')) {throw new Error('Please Login!')}
-    try {
-      const auth = req.get('Authorization').split(' ')[1]
-      if (!auth) {throw new Error('No Auth!')}
-      const obj = JWT.verify(auth, JWT_SECRET)
-      if (Date.now() - obj.expire > 0) {throw new Error('Token expired!')}
-      req.tokenData = obj
-      next()
+    const Authorization = req.get('Authorization')
+    if (!Authorization || typeof Authorization !== 'string') {
+      throw new ErrorBaseHTTP('No token received', 200001,
+        400, '尚未登录，请登录后重试~')
     }
-    catch (e) {
-      res.statusCode = 401
-      next(e)
+    const authObj = verifyToken(Authorization)
+    if (Date.now() - authObj.expire > 0) {
+      throw new ErrorBaseHTTP('Token expired', 200002,
+        400, '证书已过期，请重新登录')
     }
+    req.tokenData = authObj
+    next()
+  }
+}
+
+function verifyToken (str) {
+  try {
+    const auth = str.split(' ')[1]
+    return JWT.verify(auth, JWT_SECRET)
+  }
+  catch (e) {
+    throw new ErrorBaseHTTP('invalidate token', 200002,
+      400, 'token不符合要求，请重新登录')
   }
 }
 

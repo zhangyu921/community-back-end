@@ -11,6 +11,11 @@ router.get('/', function (req, res, next) {
 
 router.post('/login', (req, res, next) => {
   (async () => {
+    const {phoneNumber, password} = req.body
+    if (!phoneNumber || !password) {
+      throw new ErrorValidation('login',
+        'No phone Number or password')
+    }
     const user = await User.login(req.body.phoneNumber, req.body.password)
     const token = await JWT.sign({
       _id: user._id,

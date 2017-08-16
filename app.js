@@ -12,6 +12,9 @@ global.console.log = logger.info
 global.console.error = logger.error
 global.console.warn = logger.warn
 
+// add error types
+require('./error')
+
 //connect mongodb
 require('./services/mongoose')
 
@@ -40,24 +43,19 @@ app.use('/topic', topic)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-  let err = new Error('Not Found')
-  err.status = 404
+  let err = new ErrorBaseHTTP('Not Found', 400004,
+    404, '访问的资源不存在哦~')
   next(err)
 })
 
 // error handler
 app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
   logger.error('request error', err)
-  res.locals.message = err.message
-  res.locals.error = req.app.get('env') === 'development' ? err : {}
-
-  // render the error page
-  res.status(err.status || 500)
-  // res.render('error')
+  res.status(err.httpCode || 500)
   res.json({
-    code: 1,
-    msg: err.message,
+    code: err.errorCode || 999999,
+    msg: err.message || 'unknown error',
+    clientMsg: err.clientMsg || '服务器出错了哦，不如换个姿势？',
   })
 })
 

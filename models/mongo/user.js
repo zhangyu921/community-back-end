@@ -8,13 +8,12 @@ const Cipher = require('../../cipher')
 const userSchema = new Schema({
   name: {type: String, required: true},
   age: {type: Number},
-  phoneNumber: {type: String, required: true},
+  phoneNumber: {type: String, required: true, unique: true},
   password: {type: String, required: true, limit: 6},
   avatar: {type: String}
 })
 userSchema.index({phoneNumber: 1, password: 1})
 const DEFAULT_PROJECTION = {password: false, phoneNumber: false, __v: false}
-
 const userModel = mongoose.model('user', userSchema)
 
 const getUsers = async function (params = {page: 0, pageSize: 10}) {
@@ -41,7 +40,8 @@ const createUser = async function (params) {
   let user = await userModel.create(params)
     .catch(e => {
       if (e.code === 11000) {
-        throw new Error(e.errmsg)
+        throw new ErrorBaseHTTP('duplicated phone number', 200003,
+          400, '手机号码已经被注册了~')
       }
       throw new Error(e)
     })
