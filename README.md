@@ -1,6 +1,9 @@
 # cnode-back-end
 采用 Node, Express, Mongo 搭建的社区后端服务
 
+Postman API接口链接：
+https://www.getpostman.com/collections/0c1a98709fd7525bed67
+
 ## log：
 ### 0724：
 - 完成了topic和user的router和module
@@ -23,7 +26,7 @@
 - 改用流方式上传头像
 
 ### 0811 
-- 发布到了服务器上 可以通过 45.32.69.126:8082 访问
+- 发布到了服务器上 可以通过 45.32.69.126访问
 
 ### 0815
 - 添加winston库
