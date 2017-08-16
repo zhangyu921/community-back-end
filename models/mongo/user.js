@@ -71,7 +71,7 @@ const login = async function (phoneNumber, password) {
   const user = await userModel.findOne({phoneNumber, password})
     .select(DEFAULT_PROJECTION)
     .catch(e => {throw new Error(e)})
-  if (!user) {throw new Error('No Such User!')}
+  if (!user) {throw new ErrorBaseHTTP('No Such User!', 200006, 400, '当前用户不存在~')}
   return user
 }
 
