@@ -1,18 +1,19 @@
 const winston = require('winston')
+const path = require('path')
 require('winston-daily-rotate-file')
 
 const logger = new (winston.Logger)({
   transports: [
     new (winston.transports.DailyRotateFile)({
       name: 'info-file',
-      filename: './logs/info.log',
+      filename: path.join(__dirname, '..', 'logs', 'info.log'),
       datePattern: 'yyyy-MM-dd.',
       prepend: true,
       level: process.env.ENV === 'production' ? 'info' : 'debug'
     }),
     new (winston.transports.DailyRotateFile)({
       name: 'error-file',
-      filename: './logs/error.log',
+      filename: path.join(__dirname, '..', 'logs', 'error.log'),
       datePattern: 'yyyy-MM-dd.',
       prepend: true,
       level: 'error'
