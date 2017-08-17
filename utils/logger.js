@@ -28,7 +28,7 @@ const requestLogger = new (winston.Logger)({
       filename: './logs/request.log',
       datePattern: 'yyyy-MM-dd.',
       prepend: true,
-      level: process.env.ENV === 'production' ? 'info' : 'debug'
+      level: 'info'
     })
   ]
 })
