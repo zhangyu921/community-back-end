@@ -38,7 +38,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 app.use(cookieParser())
 app.use(cookieSession({
   name: 'session',
-  keys: require('./cipher').COOKIE_SEESION_KEY,
+  keys: require('./cipher').COOKIE_SESSION_KEY,
 }))
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'public/build')))
