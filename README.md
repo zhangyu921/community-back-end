@@ -38,5 +38,5 @@ https://www.getpostman.com/collections/0c1a98709fd7525bed67
 - 以生产环境在远端服务器上启动
 
 ### 0817
-- 改用morgan生成请求数据并写入winston日志，因为morgan生成的较为详细，而且能获得服务器返回的statusCode
-- 添加了cookie-session支持
+- 改用morgan生成请求数据并写入winston日志。morgan生成的较为详细，而且能获得服务器返回的statusCode
+- 改用cookie-session做鉴权验证

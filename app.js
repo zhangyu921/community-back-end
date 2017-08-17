@@ -32,13 +32,14 @@ const app = express()
 
 // uncomment after placing your favicon in /public
 // app.use(favicon(path.join(__dirname, 'public', 'build', 'favicon.ico')))
-app.use(morgan('combined', {stream: {write: message => reqLogger.info(message)}}))
+app.use(morgan('combined', {stream: {write: message => reqLogger.info(message.trim())}}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
-app.use(cookieParser())
+// app.use(cookieParser())
 app.use(cookieSession({
   name: 'session',
   keys: require('./cipher').COOKIE_SESSION_KEY,
+  maxAge: 24 * 60 * 60 * 1000
 }))
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'public/build')))

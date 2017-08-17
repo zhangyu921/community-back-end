@@ -57,7 +57,7 @@ router.route('/')
 router.route('/:id')
   .get(auth(), (req, res, next) => {
     (async () => {
-      return userModel.getUserById(req.token._id)
+      return userModel.getUserById(req.session.userID)
     })()
       .then(data => res.json(data))
       .catch(err => next(err))
@@ -67,13 +67,13 @@ router.route('/:id')
     (async () => {
       if (!req.file) {throw new ErrorValidation('avator', 'No file received')}
       let mimeType = req.file.mimetype ? req.file.mimetype.split('/')[1] : ''
-      let fileName = 'image/avatar/' + req.tokenData._id + Date.now() + '.' + mimeType
+      let fileName = 'image/avatar/' + req.session.userID + Date.now()
       let log = await uploader(
         fileName,
         bufferToStream(req.file.buffer),
       )
       if (log.code === 200) {
-        return await userModel.updateUserById(req.tokenData._id, {
+        return await userModel.updateUserById(req.session.userID, {
           avatar: 'http://ouao7n06h.bkt.clouddn.com/' + fileName + '-avatar'
         })
       } else {
@@ -100,7 +100,13 @@ router.route('/:id')
     (async () => {
       return userModel.deleteUserById(req.params.id)
     })()
-      .then(data => res.json(data))
+      .then(data => {
+        req.session.userID = undefined
+        res.json({
+          code: 0,
+          data
+        })
+      })
       .catch(err => next(err))
   })
 
