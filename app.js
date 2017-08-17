@@ -1,10 +1,12 @@
 const express = require('express')
 const path = require('path')
 const favicon = require('serve-favicon')
-const reqLogger = require('./middlewares/req-logger')
+const reqLogger = require('./utils/logger').requestLogger
+const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const cors = require('cors')
+const cookieSession = require('cookie-session')
 
 // use winston logger
 const logger = require('./utils/logger').logger
@@ -29,11 +31,15 @@ app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'ejs')
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(reqLogger('dev'))
+// app.use(favicon(path.join(__dirname, 'public', 'build', 'favicon.ico')))
+app.use(morgan('combined', {stream: {write: message => reqLogger.info(message)}}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 app.use(cookieParser())
+app.use(cookieSession({
+  name: 'session',
+  keys: require('./cipher').COOKIE_SEESION_KEY,
+}))
 app.use(cors())
 app.use(express.static(path.join(__dirname, 'public/build')))
 

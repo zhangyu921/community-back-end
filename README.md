@@ -36,3 +36,7 @@ https://www.getpostman.com/collections/0c1a98709fd7525bed67
 - 部署winston打日志记录（对没错，昨天就是光添加了，没搞定 =。=）
 - 部署了新的错误处理方式
 - 以生产环境在远端服务器上启动
+
+### 0817
+- 改用morgan生成请求数据并写入winston日志，因为morgan生成的较为详细，而且能获得服务器返回的statusCode
+- 添加了cookie-session支持
