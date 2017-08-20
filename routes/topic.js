@@ -10,13 +10,16 @@ router.route('/')
     (async () => {
       return topicModel.getTopics(req.query)
     })()
-      .then(data => res.json(data))
+      .then(data => res.json({
+        code: 0,
+        data
+      }))
       .catch(err => next(err))
   })
   .post(auth(), (req, res, next) => {
     (async () => {
-      const user = await userModel.getUserById(req.body.userId)//验证
-      if (!user) { throw new Error('Invalid Author') }
+      const user = await userModel.getUserById(req.session.userId)//验证
+      if (!user) { throw new ErrorValidation('user', 'Invalid user', '当前用户不合法') }
       const params = Object.assign({}, req.body, {userId: user._id})
       return await topicModel.createTopic(params)
     })()
@@ -50,8 +53,8 @@ router.route('/:id')
 router.route('/:id/reply')
   .post(auth(), (req, res, next) => {
     (async () => {
-      const user = await userModel.getUserById(req.body.userId)
-      if(!user){throw new Error('Invalid user id')}
+      const user = await userModel.getUserById(req.session.userId)
+      if (!user) {throw new Error('Invalid user id')}
       const params = req.body
       return await topicModel.createReply(req.params.id, params)
     })()

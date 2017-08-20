@@ -1,6 +1,6 @@
-const JWT = require('jsonwebtoken')
-const JWT_SECRET = require('../cipher').JWT_SECRET
-const userModel = require('../models/mongo/user')
+// const JWT = require('jsonwebtoken')
+// const JWT_SECRET = require('../cipher').JWT_SECRET
+// const userModel = require('../models/mongo/user')
 
 // const tokenVerify = function (options) {
 //   return function (req, res, next) {
@@ -32,10 +32,11 @@ const userModel = require('../models/mongo/user')
 
 const tokenVerify = function (options) {
   return function (req, res, next) {
-    const Authorization = req.session.userID
+    const Authorization = req.session.userId
     if (!Authorization || typeof Authorization !== 'string') {
-      throw new ErrorBaseHTTP('No userID received', 200001,
-        400, '尚未登录，请登录后重试~')
+      // res.redirect('/login')
+      throw new ErrorBaseHTTP('No userId received', 200001,
+        400, '尚未登录或已过期，请登录后重试~')
     }
     next()
   }

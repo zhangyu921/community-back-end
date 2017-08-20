@@ -25,13 +25,23 @@ router.post('/login', (req, res, next) => {
     return user
   })()
     .then(data => {
-      req.session.userID = data._id
+      req.session.userId = data._id
       res.json({
         code: 0,
         data: data
       })
     })
-    .catch(e => {next(e)})
+    .catch(err => {next(err)})
+})
+
+router.get('/logout', (req, res, next) => {
+  (async () => {
+    req.session = null
+  })()
+    .then(data => res.json({
+      code: 0,
+    }))
+    .catch(err => next(err))
 })
 
 module.exports = router
