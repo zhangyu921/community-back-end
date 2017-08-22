@@ -7,6 +7,7 @@ const cookieParser = require('cookie-parser')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const cookieSession = require('cookie-session')
+const router = express.Router()
 
 // use winston logger
 const logger = require('./utils/logger').logger
@@ -35,18 +36,20 @@ const app = express()
 app.use(morgan('combined', {stream: {write: message => reqLogger.info(message.trim())}}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
-// app.use(cookieParser())
+app.use(cookieParser())
 app.use(cookieSession({
   name: 'session',
   keys: require('./cipher').COOKIE_SESSION_KEY,
   maxAge: 24 * 60 * 60 * 1000
 }))
 app.use(cors())
-app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public/build')))
 
-app.use('/', index)
-app.use('/user', user)
-app.use('/topic', topic)
+router.use('/', index)
+router.use('/user', user)
+router.use('/topic', topic)
+
+app.use('/api/v1', router)
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
