@@ -10,10 +10,7 @@ router.route('/')
     (async () => {
       return topicModel.getTopics(req.query)
     })()
-      .then(data => res.json({
-        code: 0,
-        data
-      }))
+      .then(data => res.json(Object.assign({code: 0}, data)))
       .catch(err => next(err))
   })
   .post(auth(), (req, res, next) => {
