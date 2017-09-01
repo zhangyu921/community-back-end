@@ -8,6 +8,7 @@ const replySchema = new mongoose.Schema({
 const topicSchema = new mongoose.Schema({
   title: {type: String, required: 1},
   content: {type: String, required: 1, limit: 5},
+  createTime: {type: Date},
   userId: {type: String, required: 1},
   replies: [replySchema]
 })
