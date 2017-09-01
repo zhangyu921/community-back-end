@@ -17,25 +17,22 @@ const topicModel = mongoose.model('topic', topicSchema)
 const getTopics = async function ({page = 1, pageSize = 10}) {
   if (page < 1) {throw new ErrorValidation('topic', 'page must >= 1', 'page参数应该大于等于1')}
   if (pageSize < 1) {throw new ErrorValidation('topic', 'ageSize must >= 1', 'pageSize参数应该大于等于1')}
-  const data = await topicModel.find({}, null, {
-    sort: {_id: -1},
-    limit: parseInt(pageSize),
-    skip: parseInt(pageSize * (page - 1))
-
-  })
-    .catch(e => {
-      throw new Error(e)
+  const [data, count] = await Promise.all([
+    topicModel.find({}, null, {
+      sort: {_id: -1},
+      limit: parseInt(pageSize),
+      skip: parseInt(pageSize * (page - 1))
     })
-  const count = await topicModel.count({})
-    .then(count => {return count})
+      .catch(e => {throw new Error(e)}),
+    topicModel.count({})
+      .catch(e => {throw new Error(e)})
+  ])
   return {page, pageSize, count, data}
 }
 
 const getTopicById = async function (id) {
   return await topicModel.findOne({_id: id})
-    .catch(e => {
-      throw new Error(e)
-    })
+    .catch(e => {throw new Error(e)})
 }
 
 const createTopic = async function (params) {
