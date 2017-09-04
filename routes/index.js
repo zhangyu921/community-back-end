@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const User = require('../models/mongo/user')
+const User = require('../models/user')
 // const JWT = require('jsonwebtoken')
 // const JWT_SECRET = require('../cipher').JWT_SECRET
 

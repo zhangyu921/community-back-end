@@ -1,7 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const topicModel = require('../models/mongo/topic')
-const userModel = require('../models/mongo/user')
+const topicModel = require('../models/topic')
+const userModel = require('../models/user')
 const auth = require('../middlewares/tokenverify')
 /* GET topics listing. */
 

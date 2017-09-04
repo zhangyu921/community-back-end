@@ -3,7 +3,7 @@ const Schema = mongoose.Schema
 const crypto = require('crypto')
 const util = require('util')
 const pbkdf2Async = util.promisify(crypto.pbkdf2)
-const Cipher = require('../../cipher')
+const Cipher = require('../cipher')
 
 const userSchema = new Schema({
   name: {type: String, required: true},
