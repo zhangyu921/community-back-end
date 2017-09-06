@@ -1,8 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const User = require('../models/user')
-// const JWT = require('jsonwebtoken')
-// const JWT_SECRET = require('../cipher').JWT_SECRET
+const util = require('util')
+const crypto = require('crypto')
+const pbkdf2Async = util.promisify(crypto.pbkdf2)
+const Cipher = require('../cipher')
 
 /* GET home page. */
 router.get('/', function (req, res, next) {
@@ -11,24 +13,30 @@ router.get('/', function (req, res, next) {
 
 router.post('/login', (req, res, next) => {
   (async () => {
-    const {phoneNumber, password} = req.body
-    if (!phoneNumber || !password) {
-      throw new ErrorValidation('login',
-        'No phone Number or password')
+    const {email, password} = req.body
+    if (!email || !password) {
+      throw new ErrorValidation('login', 'No email or password')
     }
-    const user = await User.login(req.body.phoneNumber, req.body.password)
-    // const token = await JWT.sign({
-    //   _id: user._id,
-    //   iat: Date.now(),
-    //   expire: Date.now() + 1000 * 60 * 60 * 24 * 30
-    // }, JWT_SECRET)
+    const user = await User.getUserByEmail(email)
+      .catch(e => {throw new Error(e)})
+    if (!user) {throw new ErrorBaseHTTP('No Such User!', 200006, 400, '当前用户不存在~')}
+
+    let innerPassword = await pbkdf2Async(password, Cipher.PASSWORD_SALT, 512, 128, 'sha512')
+      .catch(e => {throw new Error(e)})
+    console.log(user)
+    if (user.password.toString() !== innerPassword.toString()) {throw new ErrorBaseHTTP('Password invalid', 10009, 400)}
     return user
   })()
     .then(data => {
       req.session.userId = data._id
       res.json({
         code: 0,
-        data: data
+        data: {
+          _id: data._id,
+          nickname: data.nickname,
+          email: data.email,
+          avatar: data.avatar_url
+        }
       })
     })
     .catch(err => {next(err)})

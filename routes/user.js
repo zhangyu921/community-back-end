@@ -3,6 +3,7 @@ const router = express.Router()
 const fs = require('fs')
 const auth = require('../middlewares/tokenverify')
 const userModel = require('../models/user')
+
 const multer = require('multer')
 const bytes = require('bytes')
 const uploader = require('../services/qiniu').uploader
@@ -32,7 +33,7 @@ function bufferToStream (buffer) { //buffer转可读流
 router.route('/')
   .get(auth(), (req, res, next) => {
     (async () => {
-      return userModel.getUsers()
+      return userModel.getUsers(req.params)
     })()
       .then(data => res.json(data))
       .catch(err => next(err))
@@ -66,7 +67,7 @@ router.route('/:id')
   .post(auth(), upload.single('avatar'), (req, res, next) => {
     (async () => {
       if (!req.file) {throw new ErrorValidation('avator', 'No file received')}
-      let mimeType = req.file.mimetype ? req.file.mimetype.split('/')[1] : ''
+      // let mimeType = req.file.mimetype ? req.file.mimetype.split('/')[1] : ''
       let fileName = 'image/avatar/' + req.session.userId + Date.now()
       let log = await uploader(
         fileName,
@@ -90,9 +91,17 @@ router.route('/:id')
 
   .patch(auth(), (req, res, next) => {
     (async () => {
-      return userModel.updateUserById(req.params.id, req.body)
+      return await userModel.updateUserById(req.session.userId, req.body)
     })()
-      .then(data => res.json(data))
+      .then(data => res.json({
+        code: 0,
+        data: {
+          _id: data._id,
+          email: data.email,
+          nickname: data.nickname,
+          avatar: data.avatar
+        }
+      }))
       .catch(err => next(err))
   })
 

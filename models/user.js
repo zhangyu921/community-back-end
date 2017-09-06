@@ -43,16 +43,15 @@ userSchema.pre('save', function (next) {
   next()
 })
 
-const DEFAULT_PROJECTION = {password: false, phoneNumber: false, __v: false}
+const DEFAULT_PROJECTION = {nickname: true, email: true, avatar: true}
 const userModel = mongoose.model('user', userSchema)
 
-const getUsers = async function (params = {page: 0, pageSize: 10}) {
+const getUsers = async function ({page = 1, pageSize = 10}) {
   return await userModel.find(
-    {},
-    DEFAULT_PROJECTION,
+    {}, {},
     {
-      skip: params.page * params.pageSize,
-      limit: params.pageSize,
+      skip: (page - 1) * pageSize,
+      limit: pageSize,
     }
   )
     .catch(e => {throw new Error(e)})
@@ -60,19 +59,23 @@ const getUsers = async function (params = {page: 0, pageSize: 10}) {
 const getUserById = async function (id) {
   if (!id) {throw new Error('Get user must provide name')}
   return await userModel.findOne({_id: id})
-    .select(DEFAULT_PROJECTION)
+    .catch(e => {throw new Error(e)})
+}
+const getUserByEmail = async function (email) {
+  if (!email) {throw new Error('Get user must provide email')}
+  return await userModel.findOne({email})
     .catch(e => {throw new Error(e)})
 }
 
 const createUser = async function (params) {
   const {email, password, nickname} = params
   if (!password || !email || !nickname) {throw new ErrorBaseHTTP('Need email and password')}
-  await userModel.findOne({email: params.email})
+  await userModel.findOne({email})
     .then(res => {
       if (res) {throw new ErrorBaseHTTP('Duplicated mail address', 10005, 400, 'Email已经被注册啦')}
     })
 
-  let innerPassword = await pbkdf2Async(params.password, Cipher.PASSWORD_SALT, 512, 128, 'sha512')
+  let innerPassword = await pbkdf2Async(password, Cipher.PASSWORD_SALT, 512, 128, 'sha512')
   return await userModel.create({
     email,
     password: innerPassword,
@@ -82,9 +85,18 @@ const createUser = async function (params) {
 }
 
 const updateUserById = async function (id, params) {
-  if (!id) {throw new Error('update user must provide id')}
-  return await userModel.findOneAndUpdate({_id: id}, params, {new: true})
-    .select(DEFAULT_PROJECTION)
+  if (!id || typeof id !== 'string') {throw new Error('update user must provide id')}
+  const map = ['nickname', 'avatar']
+
+  return await userModel.findOne({_id: id})
+    .then(usr => {
+      for (const key in params) {
+        if (map.indexOf(key) !== -1) {
+          usr[key] = params[key]
+        }
+      }
+      return usr.save()
+    })
     .catch(e => {throw new Error(e)})
 }
 
@@ -94,22 +106,12 @@ const deleteUserById = async function (id) {
     .catch(e => {throw new Error(e)})
 }
 
-const login = async function (phoneNumber, password) {
-  password = await pbkdf2Async(password, Cipher.PASSWORD_SALT, 512, 128, 'sha512')
-    .catch(e => {throw new Error(e)})
-  const user = await userModel.findOne({phoneNumber, password})
-    .select(DEFAULT_PROJECTION)
-    .catch(e => {throw new Error(e)})
-  if (!user) {throw new ErrorBaseHTTP('No Such User!', 200006, 400, '当前用户不存在~')}
-  return user
-}
-
 module.exports = {
   model: userModel,
   getUsers,
   getUserById,
+  getUserByEmail,
   createUser,
   updateUserById,
   deleteUserById,
-  login,
 }
