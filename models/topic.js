@@ -1,17 +1,28 @@
 const mongoose = require('mongoose')
-
-const replySchema = new mongoose.Schema({
-  content: String,
-  userId: {type: String},
-})
+const Schema = mongoose.Schema
+const ObjectId = Schema.ObjectId
 
 const topicSchema = new mongoose.Schema({
   title: {type: String, required: 1},
-  content: {type: String, required: 1, limit: 5},
-  createTime: {type: Date},
-  userId: {type: String, required: 1},
-  replies: [replySchema]
+  content: {type: String, required: 1},
+  author_id: {type: ObjectId},
+  top: {type: Boolean, default: false}, // 置顶帖
+  good: {type: Boolean, default: false}, // 精华帖
+  lock: {type: Boolean, default: false}, //被锁定主题
+  reply_count: {type: Number, default: 0},
+  visit_count: {type: Number, default: 0},
+  collection_count: {type: Number, default: 0},
+  create_at: {type: Date, default: Date.now},
+  update_at: {type: Date, default: Date.now},
+  last_reply: {type: ObjectId},
+  last_reply_at: {type: Date, default: Date.now},
+  tab: {type: String},
+  deleted: {type: Boolean, default: false},
 })
+
+topicSchema.index({create_at: -1})
+topicSchema.index({top: -1, last_reply_at: -1})
+topicSchema.index({author_id: 1, create_at: -1})
 
 const topicModel = mongoose.model('topic', topicSchema)
 
@@ -58,18 +69,6 @@ const upDateTopicById = async function (id, params) {
     })
 }
 
-const createReply = async function (topicId, params) {
-  return await topicModel.findOne({_id: topicId})
-    .then(topic => {
-      topic.replies.unshift(params)
-      return topic.save()
-    })
-    .catch(e => {
-      throw new Error(e)
-    })
-  // if (!topic) {throw new Error('invalid topic id')}
-}
-
 module.exports = {
   model: topicModel,
   getTopics,
@@ -77,5 +76,4 @@ module.exports = {
   createTopic,
   upDateTopicById,
   deleteTopicById,
-  createReply,
 }
