@@ -45,8 +45,8 @@ router.route('/')
         code: 0,
         user: {
           _id: user._id,
-          name: user.name,
-          age: user.age,
+          email: user.email,
+          nickname: user.nickname,
         }
       }
     })()
