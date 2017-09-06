@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router()
 const topicModel = require('../models/topic')
 const userModel = require('../models/user')
+const replyModel = require('../models/reply')
 const auth = require('../middlewares/tokenverify')
 /* GET topics listing. */
 
@@ -47,13 +48,18 @@ router.route('/:id')
       .catch(err => next(err))
   })
 
-router.route('/:id/reply')
+router.route('/:topicId/reply')
   .post(auth(), (req, res, next) => {
     (async () => {
       const user = await userModel.getUserById(req.session.userId)
       if (!user) {throw new Error('Invalid user id')}
-      const params = req.body
-      return await topicModel.createReply(req.params.id, params)
+      const {content, topicId, authorId, replyId} = req.body
+      return await replyModel.createReply(
+        content,
+        topicId || req.params.topicId,
+        authorId || req.session.userId,
+        replyId,
+      )
     })()
       .then(data => res.json(data))
       .catch(err => next(err))

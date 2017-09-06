@@ -3,9 +3,9 @@ const Schema = mongoose.Schema
 const ObjectId = Schema.ObjectId
 
 const replySchema = new mongoose.Schema({
-  content: {type: String},
-  topic_id: {type: ObjectId},
-  author_id: {type: ObjectId},
+  content: {type: String, require: true},
+  topic_id: {type: ObjectId, require: true},
+  author_id: {type: ObjectId, require: true},
   reply_id: {type: ObjectId}, //添加对一条回复的回复时添加reply_id
   create_at: {type: Date, default: Date.now},
   update_at: {type: Date, default: Date.now},
