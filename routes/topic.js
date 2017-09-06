@@ -53,13 +53,14 @@ router.route('/:topicId/reply')
     (async () => {
       const user = await userModel.getUserById(req.session.userId)
       if (!user) {throw new Error('Invalid user id')}
-      const {content, topicId, authorId, replyId} = req.body
-      return await replyModel.createReply(
-        content,
-        topicId || req.params.topicId,
-        authorId || req.session.userId,
-        replyId,
-      )
+      return await replyModel.createReply(Object.assign(
+        {},
+        req.body,
+        {
+          authorId: req.session.userId,
+          topicId: req.params.topicId
+        }
+      ))
     })()
       .then(data => res.json(data))
       .catch(err => next(err))

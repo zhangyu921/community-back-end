@@ -1,11 +1,12 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 const ObjectId = Schema.ObjectId
+const Topic = require('./topic')
 
 const replySchema = new mongoose.Schema({
-  content: {type: String, require: true},
-  topic_id: {type: ObjectId, require: true},
-  author_id: {type: ObjectId, require: true},
+  content: {type: String},
+  topic_id: {type: ObjectId},
+  author_id: {type: ObjectId},
   reply_id: {type: ObjectId}, //添加对一条回复的回复时添加reply_id
   create_at: {type: Date, default: Date.now},
   update_at: {type: Date, default: Date.now},
@@ -33,15 +34,27 @@ const getRepliesByTopicId = async function (id, page = 1, pageSize = 10) {
   return replies
 }
 
-const createReply = async function (content, topicId, authorId, replyId) {
+const createReply = async function (params) {
+  const {content, topicId, authorId, replyId} = params
   let reply = new replyModel({
     content,
     topic_id: topicId,
     author_id: authorId,
     reply_id: replyId,
   })
-  return await reply.save()
+  const result = await reply.save()
     .catch(e => {throw new Error(e)})
+  if (result) {
+    await Topic.model.findOneAndUpdate(
+      {_id: topicId},
+      {
+        last_reply: result._id,
+        last_reply_at: result.create_at,
+      },
+      {new: 1}
+    ).catch(e => {throw new Error(e)})
+  }
+  return result
 }
 
 module.exports = {

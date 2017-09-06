@@ -3,8 +3,8 @@ const Schema = mongoose.Schema
 const ObjectId = Schema.ObjectId
 
 const topicSchema = new mongoose.Schema({
-  title: {type: String, required: 1},
-  content: {type: String, required: 1},
+  title: {type: String},
+  content: {type: String},
   author_id: {type: ObjectId},
   top: {type: Boolean, default: false}, // 置顶帖
   good: {type: Boolean, default: false}, // 精华帖
@@ -15,7 +15,7 @@ const topicSchema = new mongoose.Schema({
   create_at: {type: Date, default: Date.now},
   update_at: {type: Date, default: Date.now},
   last_reply: {type: ObjectId},
-  last_reply_at: {type: Date, default: Date.now},
+  last_reply_at: {type: Date},
   tab: {type: String},
   deleted: {type: Boolean, default: false},
 })
@@ -48,22 +48,33 @@ const getTopicById = async function (id) {
 }
 
 const createTopic = async function (params) {
-  let topic = new topicModel(params)
+  const {title, content, authorId, tab} = params
+  let topic = new topicModel({
+    title,
+    content,
+    author_id: authorId,
+    tab,
+  })
   return await topic.save()
-    .catch(e => {
-      throw new Error(e)
-    })
+    .catch(e => {throw new Error(e)})
 }
 
 const deleteTopicById = async function (id) {
   return await topicModel.findOneAndRemove({_id: id})
-    .catch(e => {
-      throw new Error(e)
-    })
+    .catch(e => {throw new Error(e)})
 }
 
-const upDateTopicById = async function (id, params) {
-  return await topicModel.findOneAndUpdate({_id: id}, params, {new: 1})
+const upDateTopicById = async function (topicId, params) {
+  const {title, content,} = params
+  return await topicModel.findOneAndUpdate(
+    {_id: topicId},
+    {
+      title,
+      content,
+      update_at: Date.now()
+    },
+    {new: 1}
+  )
     .catch(e => {
       throw new Error(e)
     })
