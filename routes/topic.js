@@ -9,7 +9,7 @@ const auth = require('../middlewares/tokenverify')
 router.route('/')
   .get((req, res, next) => {
     (async () => {
-      return topicModel.getTopics(req.query)
+      return await topicModel.getTopics(req.query)
     })()
       .then(data => res.json(Object.assign({code: 0}, data)))
       .catch(err => next(err))
@@ -28,23 +28,32 @@ router.route('/')
 router.route('/:id')
   .get((req, res, next) => {
     (async () => {
-      return topicModel.getTopicById(req.params.id)
+      return await topicModel.getTopicById(req.params.id)
     })()
-      .then(data => res.json(data))
+      .then(data => {
+        if (!data) {next()}
+        else {res.json({code: 0, data})}
+      })
       .catch(err => next(err))
   })
+
   .patch(auth(), (req, res, next) => {
     (async () => {
-      return topicModel.upDateTopicById(req.params.id, req.body)
+      return await topicModel.upDateTopicById(req.params.id, req.body)
     })()
       .then(data => res.json(data))
       .catch(err => next(err))
   })
-  .delete(auth(), (req, res, next) => {
+  .delete(auth({super: 1}), (req, res, next) => {
     (async () => {
-      return topicModel.deleteTopicById(req.params.id)
+      return await topicModel.deleteTopicById(req.params.id)
     })()
-      .then(data => res.json(data))
+      .then(data => {
+        res.json({
+          code: 0,
+          data: data
+        })
+      })
       .catch(err => next(err))
   })
 

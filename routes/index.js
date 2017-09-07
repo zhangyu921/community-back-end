@@ -7,9 +7,9 @@ const pbkdf2Async = util.promisify(crypto.pbkdf2)
 const Cipher = require('../cipher')
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+/*router.get('/', function (req, res, next) {
   res.render('index', {title: 'Express'})
-})
+})*/
 
 router.post('/login', (req, res, next) => {
   (async () => {
