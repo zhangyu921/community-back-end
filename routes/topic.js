@@ -12,8 +12,8 @@ router.route('/')
   .get((req, res, next) => {
     (async () => {
       let {page, pageSize} = req.query
-      page = page > 0 ? page : 1
-      pageSize = pageSize > 0 ? pageSize : 10
+      page = Math.floor(page > 0 ? page : 1)
+      pageSize = Math.floor(pageSize > 0 ? pageSize : 10)
       const ep = new EventProxy()
       ep.fail(next)
       let {topics, count} = await topicModel.getTopics({page, pageSize})
@@ -26,7 +26,7 @@ router.route('/')
       })
       ep.after('author', topics.length, () => {
         topics = topics.map(function (topic) {
-          return _.pick(topic, ['id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
+          return _.pick(topic, ['_id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
             'good', 'top', 'reply_count', 'visit_count', 'create_at', 'author'])
         })
         res.send(Object.assign(
