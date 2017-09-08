@@ -1,4 +1,6 @@
 const express = require('express')
+const _ = require('lodash')
+const EventProxy = require('eventproxy')
 const router = express.Router()
 const topicModel = require('../models/topic')
 const userModel = require('../models/user')
@@ -9,9 +11,24 @@ const auth = require('../middlewares/tokenverify')
 router.route('/')
   .get((req, res, next) => {
     (async () => {
-      return await topicModel.getTopics(req.query)
+      const ep = new EventProxy()
+      ep.fail(next)
+      let topics = await topicModel.getTopics(req.query)
+      topics.forEach(topic => {
+        userModel.getUserById(topic.author_id.toString())
+          .then(author => {
+            topic.author = _.pick(author, ['nickname', 'avatar_url'])
+            ep.emit('author')
+          })
+      })
+      ep.after('author', topics.length, () => {
+        topics = topics.map(function (topic) {
+          return _.pick(topic, ['id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
+            'good', 'top', 'reply_count', 'visit_count', 'create_at', 'author'])
+        })
+        res.send(Object.assign({code: 0}, topics))
+      })
     })()
-      .then(data => res.json(Object.assign({code: 0}, data)))
       .catch(err => next(err))
   })
   .post(auth(), (req, res, next) => {
@@ -26,10 +43,8 @@ router.route('/')
   })
 
 router.route('/:id')
-  .get((req, res, next) => {
-    (async () => {
-      return await topicModel.getTopicById(req.params.id)
-    })()
+  .get(async (req, res, next) => {
+    return await topicModel.getTopicById(req.params.id)
       .then(data => {
         if (!data) {next()}
         else {res.json({code: 0, data})}

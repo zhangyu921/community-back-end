@@ -39,7 +39,7 @@ const getTopics = async function ({page = 1, pageSize = 10}) {
     topicModel.count({})
       .catch(e => {throw new Error(e)})
   ])
-  return {page, pageSize, count, data}
+  return data
 }
 
 const getTopicById = async function (id) {

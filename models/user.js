@@ -57,7 +57,7 @@ const getUsers = async function ({page = 1, pageSize = 10}) {
     .catch(e => {throw new Error(e)})
 }
 const getUserById = async function (id) {
-  if (!id) {throw new Error('Get user must provide name')}
+  if (!id) {throw new Error('Get user must provide id')}
   return await userModel.findOne({_id: id})
     .catch(e => {throw new Error(e)})
 }
