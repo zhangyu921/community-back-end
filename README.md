@@ -1,4 +1,4 @@
-# cnode-back-end
+# community-back-end
 采用 Node, Express, Mongo 搭建的社区后端服务
 
 Postman API接口链接：
