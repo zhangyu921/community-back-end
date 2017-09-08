@@ -49,6 +49,9 @@ const getTopicById = async function (id) {
 
 const createTopic = async function (params) {
   const {title, content, authorId, tab} = params
+  if (!title || !content || !authorId) {
+    throw new ErrorValidation('create topic', 'less params', '参数不全')
+  }
   let topic = new topicModel({
     title,
     content,

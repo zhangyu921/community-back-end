@@ -18,7 +18,7 @@ router.route('/')
     (async () => {
       const user = await userModel.getUserById(req.session.userId)//验证
       if (!user) { throw new ErrorValidation('user', 'Invalid user', '当前用户不合法') }
-      const params = Object.assign({}, req.body, {userId: user._id, createTime: new Date()})
+      const params = Object.assign({}, req.body, {authorId: user._id})
       return await topicModel.createTopic(params)
     })()
       .then(data => res.json(data))
