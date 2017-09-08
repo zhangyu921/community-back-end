@@ -29,7 +29,7 @@ const topicModel = mongoose.model('topic', topicSchema)
 const getTopics = async function ({page = 1, pageSize = 10}) {
   if (page < 1) {throw new ErrorValidation('topic', 'page must >= 1', 'page参数应该大于等于1')}
   if (pageSize < 1) {throw new ErrorValidation('topic', 'ageSize must >= 1', 'pageSize参数应该大于等于1')}
-  const [data, count] = await Promise.all([
+  const [topics, count] = await Promise.all([
     topicModel.find({}, null, {
       sort: {_id: -1},
       limit: parseInt(pageSize),
@@ -39,7 +39,7 @@ const getTopics = async function ({page = 1, pageSize = 10}) {
     topicModel.count({})
       .catch(e => {throw new Error(e)})
   ])
-  return data
+  return {topics, count}
 }
 
 const getTopicById = async function (id) {

@@ -11,9 +11,12 @@ const auth = require('../middlewares/tokenverify')
 router.route('/')
   .get((req, res, next) => {
     (async () => {
+      let {page, pageSize} = req.query
+      page = page > 0 ? page : 1
+      pageSize = pageSize > 0 ? pageSize : 10
       const ep = new EventProxy()
       ep.fail(next)
-      let topics = await topicModel.getTopics(req.query)
+      let {topics, count} = await topicModel.getTopics({page, pageSize})
       topics.forEach(topic => {
         userModel.getUserById(topic.author_id.toString())
           .then(author => {
@@ -26,7 +29,10 @@ router.route('/')
           return _.pick(topic, ['id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
             'good', 'top', 'reply_count', 'visit_count', 'create_at', 'author'])
         })
-        res.send(Object.assign({code: 0}, topics))
+        res.send(Object.assign(
+          {code: 0},
+          {data: topics, page, pageSize, count}
+        ))
       })
     })()
       .catch(err => next(err))
