@@ -43,3 +43,6 @@ https://www.getpostman.com/collections/0c1a98709fd7525bed67
 
 ### 0906 
 - 优化了各个数据模型
+
+### 0908 
+- 实现了文件列表接口的联合查询作者用户信息
