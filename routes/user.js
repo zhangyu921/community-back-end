@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const express = require('express')
 const router = express.Router()
 const fs = require('fs')
@@ -44,11 +45,7 @@ router.route('/')
       let user = await userModel.createUser(req.body)
       return {
         code: 0,
-        user: {
-          _id: user._id,
-          email: user.email,
-          nickname: user.nickname,
-        }
+        data: _.pick(user, ['_id', 'nickname', 'email', 'avatar'])
       }
     })()
       .then(data => res.json(data))

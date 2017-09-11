@@ -14,25 +14,13 @@ router.route('/')
       let {page, pageSize} = req.query
       page = Math.floor(page > 0 ? page : 1)
       pageSize = Math.floor(pageSize > 0 ? pageSize : 10)
-      const ep = new EventProxy()
-      ep.fail(next)
       let {topics, count} = await topicModel.getTopics({page, pageSize})
-      topics.forEach(topic => {
-        userModel.getUserById(topic.author_id.toString())
-          .then(author => {
-            topic.author = _.pick(author, ['nickname', 'avatar_url'])
-            ep.emit('author')
-          })
-      })
-      ep.after('author', topics.length, () => {
-        topics = topics.map(function (topic) {
-          return _.pick(topic, ['_id', 'author_id', 'tab', 'content', 'title', 'last_reply_at',
-            'good', 'top', 'reply_count', 'visit_count', 'create_at', 'author'])
-        })
-        res.send(Object.assign(
-          {code: 0},
-          {data: topics, page, pageSize, count}
-        ))
+      res.json({
+        code: 0,
+        data: topics,
+        count,
+        page,
+        pageSize,
       })
     })()
       .catch(err => next(err))

@@ -50,3 +50,6 @@ https://www.getpostman.com/collections/0c1a98709fd7525bed67
 
 ### 0908 
 - 实现了文件列表接口的联合查询作者用户信息
+
+### 2017-09-11
+- 改用Mongoose的populate方法实现用户信息查询，代码整洁了很多

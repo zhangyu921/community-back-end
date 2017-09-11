@@ -5,7 +5,7 @@ const ObjectId = Schema.ObjectId
 const topicSchema = new mongoose.Schema({
   title: {type: String},
   content: {type: String},
-  author_id: {type: ObjectId},
+  author: {type: ObjectId, ref: 'user'},
   top: {type: Boolean, default: false}, // 置顶帖
   good: {type: Boolean, default: false}, // 精华帖
   lock: {type: Boolean, default: false}, //被锁定主题
@@ -35,6 +35,7 @@ const getTopics = async function ({page = 1, pageSize = 10}) {
       limit: parseInt(pageSize),
       skip: parseInt(pageSize * (page - 1))
     })
+      .populate({path: 'author', select: {nickname: 1, email: 1, avatar: 1, avatar_url: 1}})
       .catch(e => {throw new Error(e)}),
     topicModel.count({})
       .catch(e => {throw new Error(e)})
@@ -43,7 +44,9 @@ const getTopics = async function ({page = 1, pageSize = 10}) {
 }
 
 const getTopicById = async function (id) {
-  return await topicModel.findOne({_id: id})
+  return await topicModel
+    .findOne({_id: id})
+    .populate({path: 'author', select: {nickname: 1, email: 1, avatar: 1}})
     .catch(e => {throw new Error(e)})
 }
 
@@ -55,7 +58,7 @@ const createTopic = async function (params) {
   let topic = new topicModel({
     title,
     content,
-    author_id: authorId,
+    author: authorId,
     tab,
   })
   return await topic.save()

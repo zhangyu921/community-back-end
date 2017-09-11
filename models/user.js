@@ -80,6 +80,7 @@ const createUser = async function (params) {
     email,
     password: innerPassword,
     nickname,
+    avatar: 'https://gravatar.com/avatar/' + utility.md5(email.toLowerCase()) + '?size=128'
   })
     .catch(e => {throw new Error(e)})
 }
