@@ -4,6 +4,10 @@
 Postman API接口链接：
 https://www.getpostman.com/collections/0c1a98709fd7525bed67
 
+
+前端项目: [Github](https://github.com/zhangyu921/community-font-end)
+项目预览地址：http://yus.world
+
 ## log：
 ### 0724：
 - 完成了topic和user的router和module
@@ -26,14 +30,14 @@ https://www.getpostman.com/collections/0c1a98709fd7525bed67
 - 改用流方式上传头像
 
 ### 0811 
-- 发布到了服务器上 可以通过 45.32.69.126访问
+- 发布到了服务器上 可以通过 yus.world 访问
 
 ### 0815
 - 添加winston库
 - 添加CORS跨域支持
 
 ### 0816
-- 部署winston打日志记录（对没错，昨天就是光添加了，没搞定 =。=）
+- 部署winston打日志记录
 - 部署了新的错误处理方式
 - 以生产环境在远端服务器上启动
 
