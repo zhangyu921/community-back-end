@@ -23,7 +23,6 @@ router.post('/login', (req, res, next) => {
 
     let innerPassword = await pbkdf2Async(password, Cipher.PASSWORD_SALT, 512, 128, 'sha512')
       .catch(e => {throw new Error(e)})
-    console.log(user)
     if (user.password.toString() !== innerPassword.toString()) {throw new ErrorBaseHTTP('Password invalid', 10009, 400)}
     return user
   })()
