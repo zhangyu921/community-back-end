@@ -8,7 +8,10 @@ https://www.getpostman.com/collections/0c1a98709fd7525bed67
 前端项目: [Github](https://github.com/zhangyu921/community-font-end)
 项目预览地址：http://yus.world
 
-## log：
+## 待完成
+- [ ] 使用 aggregate 方式，联合数据。
+
+## Log：
 ### 0724：
 - 完成了topic和user的router和module
 - 改用对象方式存储user和topic信息
