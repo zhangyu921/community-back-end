@@ -4,10 +4,6 @@
 Postman API接口链接：
 https://www.getpostman.com/collections/0c1a98709fd7525bed67
 
-
-前端项目: [Github](https://github.com/zhangyu921/community-font-end)
-项目预览地址：http://yus.world
-
 ## 待完成
 - [ ] 使用 aggregate 方式，联合数据。
 
@@ -31,9 +27,6 @@ https://www.getpostman.com/collections/0c1a98709fd7525bed67
 ### 0810 
 - 部署七牛上传头像接口
 - 改用流方式上传头像
-
-### 0811 
-- 发布到了服务器上 可以通过 yus.world 访问
 
 ### 0815
 - 添加winston库
