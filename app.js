@@ -11,6 +11,7 @@ const router = express.Router()
 
 // use winston logger
 const logger = require('./utils/logger').logger
+global.logger = logger
 global.console.log = logger.info
 global.console.error = logger.error
 global.console.warn = logger.warn
