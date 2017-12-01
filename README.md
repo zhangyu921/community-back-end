@@ -1,10 +1,22 @@
 # community-back-end
 采用 Node, Express, Mongo 搭建的社区后端服务
 
-Postman API接口链接：
+Postman API接口：
 https://www.getpostman.com/collections/0c1a98709fd7525bed67
 
-## 待完成
+## 启动方式
+```
+node bin/www
+```
+
+## 
+- [x] topic 的路由及模型
+- [x] user 路由模型及鉴权认证（cookie-session）
+- [x] 部署图片上传 Multer
+- [x] 图片上传至七牛云
+- [x] 部署 winston 日志记录
+- [x] 配置错误处理方式
+- [x] 实现文章作者信息联合查询 populate
 - [ ] 使用 aggregate 方式，联合数据。
 
 ## Log：
